@@ -158,9 +158,9 @@ def grid(b, items, font, cols=2, total_w=6.0, max_h=2.6, cap_size=14):
                 p = b.p([], font=font); b.body.remove(p); tc.append(p)
             else:
                 path, cap, src = it
-                p1 = b.p([], align='center', font=font, keep=True); b.body.remove(p1)
+                p1 = b.p([], align='center', font=font); b.body.remove(p1)
                 p1.append(_pic_run(b, path, total_w/cols - 0.25, max_h)); tc.append(p1)
-                p2 = b.p([cap], align='center', size=cap_size, font=font, keep=True); b.body.remove(p2); tc.append(p2)
+                p2 = b.p([cap], align='center', size=cap_size, font=font); b.body.remove(p2); tc.append(p2)
                 p3 = b.p([src], align='center', size=cap_size-1, font=font, after=8); b.body.remove(p3); tc.append(p3)
             tr.append(tc)
         tbl.append(tr)

@@ -1,7 +1,7 @@
 import sys, json, re
 sys.path.insert(0, '/tmp/claude-0/-home-user-script/87268cc6-2f55-530f-ae80-f44e6c5415c4/scratchpad/build')
 from builder import *
-import content3 as C
+import content4 as C
 OUT = sys.argv[1]
 PG = json.load(open(sys.argv[2])) if len(sys.argv) > 2 else {}
 
@@ -90,8 +90,17 @@ for item in C.BODY:
     elif k == 'grid':
         grid(b, [cap(x) for x in item[1]], F, max_h=item[2])
 b.p(['บรรณานุกรม'], align='center', size=18, bold=True, font=F, pb_before=True, after=12)
+from docx.opc.constants import RELATIONSHIP_TYPE as RTY
 for e in C.BIB:
-    b.p([dict(t=e['pre']), dict(t=e['title'], bold=True), dict(t=e['post'])], size=16, font=F, left=0.5, hanging=0.5, after=4, align='left')
+    post = e['post']; url = None
+    m = re.search(r'(https?://\S+)$', post)
+    if m: url = m.group(1); post = post[:m.start()]
+    para = b.p([dict(t=e['pre']), dict(t=e['title'], bold=True), dict(t=post)], size=16, font=F, left=0.5, hanging=0.5, after=4, align='left', keep_lines=True)
+    if url:
+        rid = b.d.part.relate_to(url, RTY.HYPERLINK, is_external=True)
+        hl = el('w:hyperlink'); hl.set(qn('r:id'), rid)
+        rr = el('w:r'); rr.append(rpr(F, 16)); tt = el('w:t'); tt.text = url; rr.append(tt); hl.append(rr)
+        para.append(hl)
 b.end_section(b.sect_break('Letter', header_ref=hdr, pgnum={'fmt': 'thaiNumbers', 'start': 1}))
 # ---- หน้าคั่นภาคผนวก (กลางหน้า)
 b.p(['ภาคผนวก'], align='center', size=18, bold=True, font=F, before=294)
