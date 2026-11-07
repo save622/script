@@ -153,7 +153,7 @@ def grid(b, items, font, cols=2, total_w=6.0, max_h=2.6, cap_size=14):
     for i in range(0, len(items), cols):
         tr = el('w:tr'); trpr = el('w:trPr'); trpr.append(el('w:cantSplit')); tr.append(trpr)
         for it in items[i:i+cols] + [None]*(cols-len(items[i:i+cols])):
-            tc = el('w:tc'); tcp = el('w:tcPr'); tcp.append(el('w:tcW', w=cw, type='dxa')); tc.append(tcp)
+            tc = el('w:tc'); tcp = el('w:tcPr'); tcp.append(el('w:tcW', w=cw, type='dxa')); tcp.append(el('w:vAlign', val='bottom')); tc.append(tcp)
             if it is None:
                 p = b.p([], font=font); b.body.remove(p); tc.append(p)
             else:

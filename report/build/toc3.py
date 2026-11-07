@@ -1,6 +1,6 @@
 import subprocess,re,sys,json
 sys.path.insert(0,'.')
-import content2 as C
+import content3 as C
 TH=str.maketrans('0123456789','๐๑๒๓๔๕๖๗๘๙')
 pdf,out=sys.argv[1],sys.argv[2]
 info=json.load(open(sys.argv[3]))

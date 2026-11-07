@@ -1,7 +1,7 @@
 import sys, json, re
 sys.path.insert(0, '/tmp/claude-0/-home-user-script/87268cc6-2f55-530f-ae80-f44e6c5415c4/scratchpad/build')
 from builder import *
-import content2 as C
+import content3 as C
 OUT = sys.argv[1]
 PG = json.load(open(sys.argv[2])) if len(sys.argv) > 2 else {}
 
@@ -18,7 +18,7 @@ def R(s):
     return s
 def cap(k):
     path, c, src, short = C.IMGS[k]
-    return path, f'ภาพที่ {NUM[k]} {c}', src
+    return path, R(f'ภาพที่ {NUM[k]} {c}'), src
 
 b = B('/tmp/claude-0/-home-user-script/87268cc6-2f55-530f-ae80-f44e6c5415c4/scratchpad/src/tpl.docx')
 M = C.META
@@ -104,6 +104,7 @@ for item in C.APPENDIX:
     elif k == 'img': put_img(item[1], item[2], item[3] if len(item) > 3 else 2.8)
     elif k == 'grid': grid(b, [cap(x) for x in item[1]], F, max_h=item[2])
     elif k == 'pb': b.p([], font=F, pb_before=True)
+cp = b.d.core_properties; cp.author = ''; cp.last_modified_by = ''; cp.title = C.TITLE; cp.comments = ''
 b.save(OUT, b.sect_break('Letter', header_ref=hdr))
 json.dump({'ORDER': ORDER, 'NUM': NUM}, open(OUT + '.imgs.json', 'w'), ensure_ascii=False)
 print('saved', OUT, 'images', len(ORDER))
