@@ -130,3 +130,39 @@ class B:
     def save(self, out, final_sp):
         self.body.append(final_sp)
         self.d.save(out)
+
+def _pic_run(b, path, w_in, max_h):
+    im = Image.open(path); w, h = im.size
+    wi = w_in; hi = wi * h / w
+    if hi > max_h: wi = max_h * w / h
+    r = b.d.add_paragraph().add_run(); r.add_picture(path, width=Inches(wi))
+    par = r._r.getparent(); par.getparent().remove(par)
+    return r._r
+
+def grid(b, items, font, cols=2, total_w=6.0, max_h=2.6, cap_size=14):
+    """borderless table, each cell: image, caption, source"""
+    tbl = el('w:tbl'); pr = el('w:tblPr')
+    pr.append(el('w:tblW', w=int(total_w*1440), type='dxa')); pr.append(el('w:jc', val='center'))
+    bd = el('w:tblBorders')
+    for side in ('top','left','bottom','right','insideH','insideV'): bd.append(el('w:'+side, val='nil'))
+    pr.append(bd); pr.append(el('w:tblLayout', type='fixed'))
+    tbl.append(pr)
+    g = el('w:tblGrid'); cw = int(total_w*1440/cols)
+    for _ in range(cols): g.append(el('w:gridCol', w=cw))
+    tbl.append(g)
+    for i in range(0, len(items), cols):
+        tr = el('w:tr'); trpr = el('w:trPr'); trpr.append(el('w:cantSplit')); tr.append(trpr)
+        for it in items[i:i+cols] + [None]*(cols-len(items[i:i+cols])):
+            tc = el('w:tc'); tcp = el('w:tcPr'); tcp.append(el('w:tcW', w=cw, type='dxa')); tc.append(tcp)
+            if it is None:
+                p = b.p([], font=font); b.body.remove(p); tc.append(p)
+            else:
+                path, cap, src = it
+                p1 = b.p([], align='center', font=font, keep=True); b.body.remove(p1)
+                p1.append(_pic_run(b, path, total_w/cols - 0.25, max_h)); tc.append(p1)
+                p2 = b.p([cap], align='center', size=cap_size, font=font, keep=True); b.body.remove(p2); tc.append(p2)
+                p3 = b.p([src], align='center', size=cap_size-1, font=font, after=8); b.body.remove(p3); tc.append(p3)
+            tr.append(tc)
+        tbl.append(tr)
+    b.body.append(tbl)
+    b.p([], font=font, size=8)
